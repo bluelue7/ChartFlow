@@ -21,12 +21,13 @@ import {
 } from '@umijs/max';
 import { Alert, App, Tabs } from 'antd';
 import { createStyles } from 'antd-style';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Footer } from '@/components';
 import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import Settings from '../../../../config/defaultSettings';
+import { listChartByPageUsingPost } from '@/services/chart-flow/chartController';
 
 const useStyles = createStyles(({ token }) => {
   return {
@@ -130,6 +131,13 @@ const Login: React.FC = () => {
     }
   };
 
+  //test
+  useEffect(() => {
+    listChartByPageUsingPost({}).then(res => {
+      console.error('res',res)
+    })
+  })
+  
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
