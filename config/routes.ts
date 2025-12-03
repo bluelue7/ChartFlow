@@ -8,6 +8,8 @@ export default [
     ],
   },
   { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
+  { path: '/add_chart', name: '智能分析', icon: 'barChartOutlined', component: './AddChart' },
+  { path: '/my_chart', name: '图表列表', icon: 'pieChartOutlined', component: './MyChart' },
   {
     path: '/admin',
     name: '管理页',
