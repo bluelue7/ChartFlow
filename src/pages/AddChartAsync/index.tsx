@@ -30,7 +30,7 @@ const AddChartAsync: React.FC = () => {
     };
     try {
       const res = await genChartByAiAsyncUsingPost(params, {}, values.file.file.originFileObj);
-      // const res = await genChartByAiAsyncMqUsingPOST(params, {}, values.file.file.originFileObj);
+      // const res = await genChartByAiAsyncMqUsingPost(params, {}, values.file.file.originFileObj);
       if (!res?.data) {
         message.error('分析失败');
       } else {

@@ -116,7 +116,7 @@ const Welcome: React.FC = () => {
               color: token.colorTextHeading,
             }}
           >
-            欢迎使用 Smart BI
+            欢迎使用 Smart BI 智能数据分析平台
           </div>
           <p
             style={{
@@ -128,8 +128,7 @@ const Welcome: React.FC = () => {
               width: '65%',
             }}
           >
-            Smart BI 是一个整合了 umi，Smart BI 和 ProComponents
-            的脚手架方案。致力于在设计规范和基础组件的基础上，继续向上构建，提炼出典型模板/业务组件/配套设计资源，进一步提升企业级中后台产品设计研发过程中的『用户』和『设计者』的体验。
+            Smart BI 是一个基于 AI 的智能数据分析平台。与传统 BI 工具不同，您只需要上传原始数据集并输入分析目标，平台即可自动生成可视化图表和数据分析结论，大幅降低数据分析门槛，提升决策效率。
           </p>
           <div
             style={{
@@ -140,21 +139,21 @@ const Welcome: React.FC = () => {
           >
             <InfoCard
               index={1}
-              href="https://umijs.org/docs/introduce/introduce"
-              title="了解 umi"
-              desc="umi 是一个可扩展的企业级前端应用框架,umi 以路由为基础的，同时支持配置式路由和约定式路由，保证路由的功能完备，并以此进行功能扩展。"
+              href="/chart/add"
+              title="智能数据分析"
+              desc="上传 Excel 数据集，输入分析目标，AI 自动生成可视化图表和智能分析结论。支持多种图表类型：折线图、柱状图、饼图、雷达图等。"
             />
             <InfoCard
               index={2}
-              title="了解 Smart BI"
-              href="https://ant.design"
-              desc="antd 是基于 Smart BI 设计体系的 React UI 组件库，主要用于研发企业级中后台产品。"
+              title="图表管理"
+              href="/chart/list"
+              desc="统一管理生成的图表，支持查看、搜索、编辑、删除等操作。图表数据异步生成，采用消息队列确保稳定高效。"
             />
             <InfoCard
               index={3}
-              title="了解 Pro Components"
-              href="https://procomponents.ant.design"
-              desc="ProComponents 是一个基于 Smart BI 做了更高抽象的模板组件，以 一个组件就是一个页面为开发理念，为中后台开发带来更好的体验。"
+              title="技术架构"
+              href="https://github.com/your-repo"
+              desc="前端: React + Umi + Ant Design Pro + ECharts | 后端: Spring Boot + MySQL + RabbitMQ + OpenAI API | 支持 Excel 解析、接口文档、异步处理等功能。"
             />
           </div>
         </div>
