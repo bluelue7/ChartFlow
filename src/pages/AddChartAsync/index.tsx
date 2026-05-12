@@ -1,4 +1,6 @@
 import { genChartByAiAsyncUsingPost } from '@/services/chart-flow/chartController';
+import { uploadDatasetUsingPost } from '@/services/chart-flow/datasetController';
+import { getMyPromptListUsingGet } from '@/services/chart-flow/promptController';
 import { UploadOutlined } from '@ant-design/icons';
 import { Button, Card, Form, Input, message, Select, Space, Upload } from 'antd';
 import { useForm } from 'antd/es/form/Form';
@@ -12,6 +14,22 @@ import React, { useState } from 'react';
 const AddChartAsync: React.FC = () => {
   const [form] = useForm();
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [promptList, setPromptList] = useState<API.Prompt[]>([]);
+
+  // 加载用户的 prompt 列表
+  React.useEffect(() => {
+    const loadPrompts = async () => {
+      try {
+        const res = await getMyPromptListUsingGet({ page: 1, size: 100 });
+        if (res.data) {
+          setPromptList(res.data.records || []);
+        }
+      } catch (e) {
+        console.error('加载 prompt 列表失败', e);
+      }
+    };
+    loadPrompts();
+  }, []);
 
   /**
    * 提交
@@ -29,12 +47,23 @@ const AddChartAsync: React.FC = () => {
       file: undefined,
     };
     try {
+      // 先上传数据集
+      const datasetRes = await uploadDatasetUsingPost(
+        { name: values.file.file.name },
+        {},
+        values.file.file.originFileObj
+      );
+      if (!datasetRes?.data) {
+        message.error('数据集上传失败');
+        return;
+      }
+      
       const res = await genChartByAiAsyncUsingPost(params, {}, values.file.file.originFileObj);
       // const res = await genChartByAiAsyncMqUsingPost(params, {}, values.file.file.originFileObj);
       if (!res?.data) {
         message.error('分析失败');
       } else {
-        message.success('分析任务提交成功，稍后请在我的图表页面查看');
+        message.success('分析任务提交成功，稍后请在图表列表页面查看');
         form.resetFields();
       }
     } catch (e: any) {
@@ -76,9 +105,21 @@ const AddChartAsync: React.FC = () => {
               ]}
             />
           </Form.Item>
+          <Form.Item name="promptId" label="提词模板">
+            <Select
+              placeholder="请选择提词模板（可选）"
+              allowClear
+            >
+              {promptList.map(prompt => (
+                <Select.Option key={prompt.id} value={prompt.id}>
+                  {prompt.name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
           <Form.Item name="file" label="原始数据">
             <Upload name="file" maxCount={1}>
-              <Button icon={<UploadOutlined />}>上传 CSV 文件</Button>
+              <Button icon={<UploadOutlined />}>上传 EXCEL 文件</Button>
             </Upload>
           </Form.Item>
 

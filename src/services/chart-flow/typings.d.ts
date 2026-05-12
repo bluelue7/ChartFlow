@@ -159,24 +159,103 @@ declare namespace API {
     chartType?: string;
     goal?: string;
     name?: string;
+    promptId?: number;
   };
 
   type genChartByAiAsyncUsingPOSTParams = {
     chartType?: string;
     goal?: string;
     name?: string;
+    promptId?: number;
   };
 
   type genChartByAiUsingPOSTParams = {
     chartType?: string;
     goal?: string;
     name?: string;
+    promptId?: number;
+  };
+
+  type uploadChartUsingPOSTParams = {
+    goal?: string;
+    chartType?: string;
+    promptId?: number;
   };
 
   type getChartByIdUsingGETParams = {
     /** id */
     id?: number;
   };
+
+  type getMyChartListUsingGETParams = {
+    page?: number;
+    size?: number;
+    status?: string;
+    keyword?: string;
+  };
+
+  type getAllChartListUsingGETParams = {
+    page?: number;
+    size?: number;
+    status?: string;
+    keyword?: string;
+    userId?: number;
+  };
+
+  interface TaskLog {
+    chartId: string;
+    costMs: number;
+    createTime: string;
+    execMessage: string;
+    id: number;
+    isDelete: number;
+    status: string;
+    updateTime: string;
+  }
+
+  interface ModelRecord {
+    chartId: number;
+    costMs: number;
+    createTime: string;
+    errorMsg: string;
+    id: number;
+    inputTokens: number;
+    invocationType: string;
+    isDelete: number;
+    modelName: string;
+    outputTokens: number;
+    requestContent: string;
+    responseContent: string;
+    status: string;
+    totalTokens: number;
+    updateTime: string;
+    userId: number;
+  }
+
+  interface TaskLogQueryRequest {
+    chartId?: string;
+    current?: number;
+    id?: number;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+    status?: string;
+  }
+
+  interface ModelRecordQueryRequest {
+    chartId?: number;
+    createTimeEnd?: string;
+    createTimeStart?: string;
+    current?: number;
+    id?: number;
+    invocationType?: string;
+    modelName?: string;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+    status?: string;
+    userId?: number;
+  }
 
   type getPostVOByIdUsingGETParams = {
     /** id */
@@ -360,6 +439,7 @@ declare namespace API {
 
   type User = {
     createTime?: string;
+    email?: string;
     id?: number;
     isDelete?: number;
     updateTime?: string;
@@ -417,10 +497,235 @@ declare namespace API {
 
   type UserVO = {
     createTime?: string;
+    email?: string;
     id?: number;
     userAvatar?: string;
     userName?: string;
     userProfile?: string;
     userRole?: string;
   };
+
+  type Prompt = {
+    id?: number;
+    name?: string;
+    promptQuery?: string;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    usageCount?: number;
+    userId?: number;
+  };
+
+  type PromptAddRequest = {
+    name?: string;
+    promptQuery?: string;
+  };
+
+  type PromptUpdateRequest = {
+    id?: number;
+    name?: string;
+    promptQuery?: string;
+  };
+
+  type PromptQueryRequest = {
+    createTimeEnd?: string;
+    createTimeStart?: string;
+    current?: number;
+    id?: number;
+    name?: string;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+    userId?: number;
+  };
+
+  type Feedback = {
+    id?: number;
+    chartId?: number;
+    userId?: number;
+    rating?: number;
+    comment?: string;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+  };
+
+  type FeedbackAddRequest = {
+    chartId?: number;
+    comment?: string;
+    rating?: number;
+  };
+
+  type FeedbackUpdateRequest = {
+    id?: number;
+    rating?: number;
+    comment?: string;
+  };
+
+  type FeedbackQueryRequest = {
+    chartId?: number;
+    createTimeEnd?: string;
+    createTimeStart?: string;
+    current?: number;
+    id?: number;
+    pageSize?: number;
+    rating?: number;
+    sortField?: string;
+    sortOrder?: string;
+    userId?: number;
+  };
+
+  type PageFeedback_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: Feedback[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type TaskLog = {
+    id?: number;
+    taskType?: string;
+    status?: string;
+    chartId?: number;
+    userId?: number;
+    startTime?: string;
+    endTime?: string;
+    duration?: number;
+  };
+
+  type TaskLogQueryRequest = {
+    page?: number;
+    size?: number;
+    status?: string;
+  };
+
+  type PageTaskLog_ = {
+    content?: TaskLog[];
+    totalElements?: number;
+    totalPages?: number;
+  };
+
+  type ModelLog = {
+    id?: number;
+    modelName?: string;
+    prompt?: string;
+    response?: string;
+    tokenUsage?: number;
+    duration?: number;
+    chartId?: number;
+    createdAt?: string;
+  };
+
+  type ModelLogQueryRequest = {
+    page?: number;
+    size?: number;
+  };
+
+  type PageModelLog_ = {
+    content?: ModelLog[];
+    totalElements?: number;
+    totalPages?: number;
+  };
+
+  type ChartUploadRequest = {
+    goal?: string;
+    chartType?: string;
+    promptId?: number;
+  };
+
+  type BaseResponsePrompt_ = {
+    code?: number;
+    data?: Prompt;
+    message?: string;
+  };
+
+  type BaseResponsePromptList_ = {
+    code?: number;
+    data?: Prompt[];
+    message?: string;
+  };
+
+  type BaseResponseFeedback_ = {
+    code?: number;
+    data?: Feedback;
+    message?: string;
+  };
+
+  type BaseResponsePageFeedback_ = {
+    code?: number;
+    data?: PageFeedback_;
+    message?: string;
+  };
+
+  type BaseResponsePageTaskLog_ = {
+    code?: number;
+    data?: PageTaskLog_;
+    message?: string;
+  };
+
+  type BaseResponsePageModelLog_ = {
+    code?: number;
+    data?: PageModelLog_;
+    message?: string;
+  };
+
+  type BaseResponseSuccess_ = {
+    code?: number;
+    data?: { success: boolean; message?: string };
+    message?: string;
+  };
+
+  type Dataset = {
+    id?: number;
+    name?: string;
+    filePath?: string;
+    rowCount?: number;
+    columnCount?: number;
+    columnMeta?: string;
+    userId?: number;
+    isDelete?: number;
+    updateTime?: string;
+  };
+
+  type DatasetQueryRequest = {
+    name?: string;
+    userId?: number;
+    createTimeStart?: string;
+    createTimeEnd?: string;
+    current?: number;
+    pageSize?: number;
+  };
+
+  type PageDataset_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: Dataset[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type BaseResponsePageDataset_ = {
+    code?: number;
+    data?: PageDataset_;
+    message?: string;
+  };
+
+  type uploadDatasetUsingPOSTParams = {
+    name?: string;
+  };
 }
+
+
+
+

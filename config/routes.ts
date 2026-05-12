@@ -1,4 +1,4 @@
-export default [
+﻿export default [
   {
     path: '/user',
     layout: false,
@@ -10,7 +10,11 @@ export default [
   { path: '/welcome', name: '欢迎', icon: 'smile', component: './Welcome' },
   { path: '/add_chart', name: '智能分析（同步）', icon: 'barChartOutlined', component: './AddChart' },
   { path: '/add_chart_async', name: '智能分析（异步）', icon: 'DotChartOutlined', component: './AddChartAsync' },
-  { path: '/my_chart', name: '我的图表', icon: 'pieChartOutlined', component: './MyChart' },
+  { path: '/chart_list', name: '图表列表', icon: 'barChartOutlined', component: './ChartList' },
+  { path: '/log', name: '日志管理', icon: 'fileText', component: './Log' },
+  { path: '/dataset', name: '数据集', icon: 'database', component: './Dataset' },
+  { path: '/feedback_list', name: '反馈列表', icon: 'MessageOutlined', component: './FeedbackList' },
+  { path: '/prompt_list', name: '提词管理', icon: 'FileTextOutlined', component: './PromptList' },
   {
     path: '/admin',
     name: '管理页',
@@ -21,7 +25,6 @@ export default [
       { path: '/admin/sub-page', name: '二级管理页', component: './Admin' },
     ],
   },
-  // { name: '查询表格', icon: 'table', path: '/list', component: './table-list' },
   { path: '/', redirect: '/welcome' },
   { path: '*', layout: false, component: './404' },
 ];

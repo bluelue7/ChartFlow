@@ -139,20 +139,20 @@ const Welcome: React.FC = () => {
           >
             <InfoCard
               index={1}
-              href="/chart/add"
+              href="/add_chart"
               title="智能数据分析"
               desc="上传 Excel 数据集，输入分析目标，AI 自动生成可视化图表和智能分析结论。支持多种图表类型：折线图、柱状图、饼图、雷达图等。"
             />
             <InfoCard
               index={2}
               title="图表管理"
-              href="/chart/list"
+              href="/my_chart"
               desc="统一管理生成的图表，支持查看、搜索、编辑、删除等操作。图表数据异步生成，采用消息队列确保稳定高效。"
             />
             <InfoCard
               index={3}
               title="技术架构"
-              href="https://github.com/your-repo"
+              href="https://www.github.com/bluelue7/ChartCore"
               desc="前端: React + Umi + Ant Design Pro + ECharts | 后端: Spring Boot + MySQL + RabbitMQ + OpenAI API | 支持 Excel 解析、接口文档、异步处理等功能。"
             />
           </div>

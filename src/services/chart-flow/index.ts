@@ -8,6 +8,10 @@ import * as postController from "./postController";
 import * as postFavourController from "./postFavourController";
 import * as postThumbController from "./postThumbController";
 import * as userController from "./userController";
+import * as promptController from "./promptController";
+import * as feedbackController from "./feedbackController";
+import * as logController from "./logController";
+import * as datasetController from "./datasetController";
 export default {
   chartController,
   fileController,
@@ -15,4 +19,8 @@ export default {
   postFavourController,
   postThumbController,
   userController,
+  promptController,
+  feedbackController,
+  logController,
+  datasetController,
 };

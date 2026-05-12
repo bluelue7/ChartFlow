@@ -194,6 +194,45 @@ export async function getChartByIdUsingGet(
   });
 }
 
+/** getMyChartList GET /api/chart/my */
+export async function getMyChartListUsingGet(
+  params: API.getMyChartListUsingGETParams,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponsePageChart_>("/api/chart/my", {
+    method: "GET",
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
+/** getAllChartList GET /api/chart */
+export async function getAllChartListUsingGet(
+  params: API.getAllChartListUsingGETParams,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponsePageChart_>("/api/chart", {
+    method: "GET",
+    params: {
+      ...params,
+    },
+    ...(options || {}),
+  });
+}
+
+/** getChartDetail GET /api/chart/{id} */
+export async function getChartDetailUsingGet(
+  id: number,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseChart_>(`/api/chart/${id}`, {
+    method: "GET",
+    ...(options || {}),
+  });
+}
+
 /** listChartByPage POST /api/chart/list/page */
 export async function listChartByPageUsingPost(
   body: API.ChartQueryRequest,
@@ -235,6 +274,49 @@ export async function updateChartUsingPost(
       "Content-Type": "application/json",
     },
     data: body,
+    ...(options || {}),
+  });
+}
+
+/** uploadChart POST /api/chart/upload */
+export async function uploadChartUsingPost(
+  params: API.uploadChartUsingPOSTParams,
+  body: {},
+  file?: File,
+  options?: { [key: string]: any }
+) {
+  const formData = new FormData();
+
+  if (file) {
+    formData.append("file", file);
+  }
+
+  Object.keys(body).forEach((ele) => {
+    const item = (body as any)[ele];
+
+    if (item !== undefined && item !== null) {
+      if (typeof item === "object" && !(item instanceof File)) {
+        if (item instanceof Array) {
+          item.forEach((f) => formData.append(ele, f || ""));
+        } else {
+          formData.append(
+            ele,
+            new Blob([JSON.stringify(item)], { type: "application/json" })
+          );
+        }
+      } else {
+        formData.append(ele, item);
+      }
+    }
+  });
+
+  return request<API.BaseResponseChart_>("/api/chart/upload", {
+    method: "POST",
+    params: {
+      ...params,
+    },
+    data: formData,
+    requestType: "form",
     ...(options || {}),
   });
 }

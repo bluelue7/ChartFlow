@@ -64,11 +64,19 @@ const Login: React.FC = () => {
   //登录成功后，获取用户登录信息
   const fetchUserInfo = async () => {
     const userInfo = await getLoginUserUsingGet();
-    if (userInfo) {
+    if (userInfo && userInfo.data) {
+      const userData = userInfo.data;
       flushSync(() => {
         setInitialState((s) => ({
           ...s,
-          currentUser: userInfo,
+          currentUser: {
+            name: userData.userName,
+            avatar: userData.userAvatar,
+            userAvatar: userData.userAvatar,
+            userId: userData.id,
+            userRole: userData.userRole,
+            userName: userData.userName,
+          },
         }));
       });
     }
