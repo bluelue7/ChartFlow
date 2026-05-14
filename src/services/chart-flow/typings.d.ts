@@ -508,35 +508,25 @@ declare namespace API {
   type Prompt = {
     id?: number;
     name?: string;
-    promptQuery?: string;
-    createTime?: string;
-    updateTime?: string;
-    isDelete?: number;
-    usageCount?: number;
-    userId?: number;
+    content?: string;
+    description?: string;
+    isDefault?: boolean;
+    createdAt?: string;
   };
 
-  type PromptAddRequest = {
+  type PromptCreateRequest = {
     name?: string;
-    promptQuery?: string;
+    content?: string;
+    description?: string;
+    isDefault?: boolean;
   };
 
   type PromptUpdateRequest = {
     id?: number;
     name?: string;
-    promptQuery?: string;
-  };
-
-  type PromptQueryRequest = {
-    createTimeEnd?: string;
-    createTimeStart?: string;
-    current?: number;
-    id?: number;
-    name?: string;
-    pageSize?: number;
-    sortField?: string;
-    sortOrder?: string;
-    userId?: number;
+    content?: string;
+    description?: string;
+    isDefault?: boolean;
   };
 
   type Feedback = {
@@ -558,8 +548,8 @@ declare namespace API {
 
   type FeedbackUpdateRequest = {
     id?: number;
-    rating?: number;
     comment?: string;
+    rating?: number;
   };
 
   type FeedbackQueryRequest = {
@@ -725,7 +715,3 @@ declare namespace API {
     name?: string;
   };
 }
-
-
-
-

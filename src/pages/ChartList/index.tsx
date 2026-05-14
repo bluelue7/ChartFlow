@@ -4,9 +4,10 @@ import { addFeedbackUsingPost, deleteFeedbackUsingDelete, updateFeedbackUsingPut
 import { useModel } from '@@/exports';
 import { Card, Input, Select, Tag, message, Row, Col, Modal, Pagination, Button, Rate } from 'antd';
 import ReactECharts from 'echarts-for-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 const ChartListPage: React.FC = () => {
+  const chartRef = useRef<Record<string, any>>({});
   const initSearchParams = {
     current: 1,
     pageSize: 10,
@@ -97,7 +98,7 @@ const ChartListPage: React.FC = () => {
     return <Tag color={color}>{text}</Tag>;
   };
 
-  const renderChartPreview = (genChart: string, status: string, onClick?: () => void) => {
+  const renderChartPreview = (genChart: string, status: string, chartId?: number, onClick?: () => void) => {
     if ((status === 'succeed' || status === 'completed') && genChart) {
       try {
         const chartOption = JSON.parse(genChart);
@@ -106,7 +107,11 @@ const ChartListPage: React.FC = () => {
             onClick={onClick} 
             style={{ cursor: onClick ? 'pointer' : 'default' }}
           >
-            <ReactECharts option={chartOption} style={{ width: '100%', height: 200 }} />
+            <ReactECharts 
+              ref={(e: any) => { if (e && chartId) chartRef.current[chartId] = e.getEchartsInstance(); }}
+              option={chartOption} 
+              style={{ width: '100%', height: 200 }} 
+            />
           </div>
         );
       } catch (e) {
@@ -208,6 +213,22 @@ const ChartListPage: React.FC = () => {
     });
   };
 
+  const handleExportChart = (chart: API.Chart) => {
+    const chartInstance = chartRef.current[chart.id!];
+    if (chartInstance) {
+      const base64 = chartInstance.getDataURL({
+        type: 'png',
+        pixelRatio: 2,
+        backgroundColor: '#fff',
+      });
+      const link = document.createElement('a');
+      link.download = `${chart.name || 'chart'}.png`;
+      link.href = base64;
+      link.click();
+      message.success('导出成功');
+    }
+  };
+
   const handleDeleteFeedback = async (id: number) => {
     try {
       const res = await deleteFeedbackUsingDelete({ id });
@@ -279,6 +300,14 @@ const ChartListPage: React.FC = () => {
                 <div style={{ color: '#666', fontSize: '12px', marginBottom: 4 }}>图表类型</div>
                 <div style={{ fontSize: '14px' }}>{chart.chartType || '-'}</div>
               </div>
+              {chart.genResult && (
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ color: '#666', fontSize: '12px', marginBottom: 4 }}>分析结论</div>
+                  <div style={{ fontSize: '14px', lineHeight: '1.5', maxHeight: 60, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {chart.genResult}
+                  </div>
+                </div>
+              )}
               <div>
                 <div style={{ color: '#666', fontSize: '12px', marginBottom: 8 }}>
                   图表预览
@@ -288,20 +317,29 @@ const ChartListPage: React.FC = () => {
                     </span>
                   )}
                 </div>
-                {renderChartPreview(chart.genChart || '', chart.status || '', () => handleChartClick(chart))}
+                {renderChartPreview(chart.genChart || '', chart.status || '', chart.id, () => handleChartClick(chart))}
               </div>
               <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #f0f0f0' }}>
                 <div style={{ color: '#666', fontSize: '12px', marginBottom: 8 }}>
                   创建时间：{chart.createTime || '-'}
                 </div>
-                <Button 
-                  type="primary" 
-                  size="small" 
-                  onClick={() => handleOpenFeedback(chart)}
-                  style={{ marginTop: 8 }}
-                >
-                  查看/添加反馈
-                </Button>
+                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                  <Button 
+                    type="primary" 
+                    size="small" 
+                    onClick={() => handleOpenFeedback(chart)}
+                  >
+                    查看/添加反馈
+                  </Button>
+                  {(chart.status === 'succeed' || chart.status === 'completed') && chart.genChart && (
+                    <Button 
+                      size="small" 
+                      onClick={() => handleExportChart(chart)}
+                    >
+                      导出图表
+                    </Button>
+                  )}
+                </div>
               </div>
             </Card>
           </Col>
