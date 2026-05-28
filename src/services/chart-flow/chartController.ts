@@ -224,7 +224,7 @@ export async function getAllChartListUsingGet(
 
 /** getChartDetail GET /api/chart/{id} */
 export async function getChartDetailUsingGet(
-  id: number,
+  id: string,
   options?: { [key: string]: any }
 ) {
   return request<API.BaseResponseChart_>(`/api/chart/${id}`, {

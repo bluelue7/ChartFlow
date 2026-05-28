@@ -1,4 +1,4 @@
-import { getAllChartListUsingGet, getMyChartListUsingGet } from '@/services/chart-flow/chartController';
+import { getAllChartListUsingGet, getMyChartListUsingGet, deleteChartUsingPost, getChartDetailUsingGet, updateChartUsingPost } from '@/services/chart-flow/chartController';
 import { addFeedbackUsingPost, deleteFeedbackUsingDelete, updateFeedbackUsingPut, getFeedbackUsingGet, getFeedbackListPageUsingPost } from '@/services/chart-flow/feedbackController';
 
 import { useModel } from '@@/exports';
@@ -34,6 +34,18 @@ const ChartListPage: React.FC = () => {
     rating: 0,
   });
   const [editingFeedback, setEditingFeedback] = useState<API.Feedback | null>(null);
+  
+  // 图表详情和修改状态
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [detailChart, setDetailChart] = useState<API.Chart | null>(null);
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    goal: '',
+    genResult: '',
+    genChart: '',
+    status: '',
+  });
 
   const loadData = async () => {
     setLoading(true);
@@ -98,7 +110,7 @@ const ChartListPage: React.FC = () => {
     return <Tag color={color}>{text}</Tag>;
   };
 
-  const renderChartPreview = (genChart: string, status: string, chartId?: number, onClick?: () => void) => {
+  const renderChartPreview = (genChart: string, status: string, chartId?: string, onClick?: () => void) => {
     if ((status === 'succeed' || status === 'completed') && genChart) {
       try {
         const chartOption = JSON.parse(genChart);
@@ -144,7 +156,6 @@ const ChartListPage: React.FC = () => {
       }
     } catch (e) {
       console.error('加载反馈失败', e);
-      const chartId = String(chart.id);
       setChartFeedbacks(prev => ({ ...prev, [chartId]: [] }));
     }
     
@@ -170,8 +181,9 @@ const ChartListPage: React.FC = () => {
           comment: feedbackForm.comment,
         });
       } else {
+        const chartId = String(selectedChart.id);
         res = await addFeedbackUsingPost({
-          chartId: String(selectedChart.id),
+          chartId: chartId,
           rating: feedbackForm.rating,
           comment: feedbackForm.comment,
         });
@@ -214,7 +226,8 @@ const ChartListPage: React.FC = () => {
   };
 
   const handleExportChart = (chart: API.Chart) => {
-    const chartInstance = chartRef.current[chart.id!];
+    const chartId = String(chart.id);
+    const chartInstance = chartRef.current[chartId];
     if (chartInstance) {
       const base64 = chartInstance.getDataURL({
         type: 'png',
@@ -226,6 +239,85 @@ const ChartListPage: React.FC = () => {
       link.href = base64;
       link.click();
       message.success('导出成功');
+    }
+  };
+
+  // 删除图表
+  const handleDeleteChart = async (chart: API.Chart) => {
+    if (!window.confirm(`确定要删除图表 "${chart.name}" 吗？`)) {
+      return;
+    }
+    try {
+      const chartId = String(chart.id);
+      const res = await deleteChartUsingPost({ id: chartId });
+      if (res.data) {
+        message.success('删除成功');
+        loadData();
+      } else {
+        message.error(res.message || '删除失败');
+      }
+    } catch (e: any) {
+      message.error('删除失败，' + e.message);
+    }
+  };
+
+  // 获取图表详情
+  const handleGetChartDetail = async (chart: API.Chart) => {
+    try {
+      const chartId = String(chart.id);
+      const res = await getChartDetailUsingGet(chartId);
+      if (res.data) {
+        setDetailChart(res.data);
+        setDetailModalVisible(true);
+      } else {
+        message.error(res.message || '获取详情失败');
+      }
+    } catch (e: any) {
+      message.error('获取详情失败，' + e.message);
+    }
+  };
+
+  // 打开修改图表弹窗
+  const handleOpenEditChart = (chart: API.Chart) => {
+    setEditFormData({
+      name: chart.name || '',
+      goal: chart.goal || '',
+      genResult: chart.genResult || '',
+      genChart: chart.genChart || '',
+      status: chart.status || '',
+    });
+    setDetailChart(chart);
+    setEditModalVisible(true);
+  };
+
+  // 提交修改图表
+  const handleSubmitEditChart = async () => {
+    if (!detailChart) return;
+    
+    try {
+      if (editFormData.genChart) {
+        JSON.parse(editFormData.genChart);
+      }
+    } catch (e) {
+      message.error('ECharts 配置格式错误，请输入有效的 JSON 格式');
+      return;
+    }
+    
+    try {
+      const chartId = String(detailChart.id);
+      const res = await updateChartUsingPost({
+        id: chartId,
+        ...editFormData,
+      });
+      if (res.data) {
+        message.success('修改成功');
+        setEditModalVisible(false);
+        loadData();
+      } else {
+        message.error(res.message || '修改失败');
+      }
+    } catch (e: any) {
+      message.error('修改失败，' + e.message);
     }
   };
 
@@ -317,13 +409,13 @@ const ChartListPage: React.FC = () => {
                     </span>
                   )}
                 </div>
-                {renderChartPreview(chart.genChart || '', chart.status || '', chart.id, () => handleChartClick(chart))}
+                {renderChartPreview(chart.genChart || '', chart.status || '', String(chart.id), () => handleChartClick(chart))}
               </div>
               <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #f0f0f0' }}>
                 <div style={{ color: '#666', fontSize: '12px', marginBottom: 8 }}>
                   创建时间：{chart.createTime || '-'}
                 </div>
-                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
                   <Button 
                     type="primary" 
                     size="small" 
@@ -339,6 +431,29 @@ const ChartListPage: React.FC = () => {
                       导出图表
                     </Button>
                   )}
+                  <Button 
+                    size="small" 
+                    onClick={() => handleGetChartDetail(chart)}
+                  >
+                    查看详情
+                  </Button>
+                  {currentUser?.userRole === 'admin' && (
+                    <>
+                      <Button 
+                        size="small" 
+                        onClick={() => handleOpenEditChart(chart)}
+                      >
+                        修改图表
+                      </Button>
+                    </>
+                  )}
+                  <Button 
+                    size="small" 
+                    danger 
+                    onClick={() => handleDeleteChart(chart)}
+                  >
+                    删除图表
+                  </Button>
                 </div>
               </div>
             </Card>
@@ -457,6 +572,145 @@ const ChartListPage: React.FC = () => {
               ))}
             </div>
           )}
+        </div>
+      </Modal>
+
+      {/* 图表详情弹窗 */}
+      <Modal
+        title={`${detailChart?.name || ''} - 图表详情`}
+        visible={detailModalVisible}
+        onCancel={() => setDetailModalVisible(false)}
+        width={800}
+        footer={[
+          <Button key="close" onClick={() => setDetailModalVisible(false)}>关闭</Button>
+        ]}
+      >
+        {detailChart && (
+          <div style={{ maxHeight: 600, overflowY: 'auto' }}>
+            <div style={{ marginBottom: 16 }}>
+              <h4 style={{ marginBottom: 8 }}>基本信息</h4>
+              <div style={{ display: 'flex', gap: 32 }}>
+                <div>
+                  <span style={{ color: '#666' }}>图表ID：</span>
+                  <span>{detailChart.id}</span>
+                </div>
+                <div>
+                  <span style={{ color: '#666' }}>创建者ID：</span>
+                  <span>{detailChart.userId}</span>
+                </div>
+                <div>
+                  <span style={{ color: '#666' }}>状态：</span>
+                  {getStatusTag(detailChart.status || '')}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 16 }}>
+              <h4 style={{ marginBottom: 8 }}>图表名称</h4>
+              <div style={{ padding: 12, border: '1px solid #f0f0f0', borderRadius: 4 }}>
+                {detailChart.name || '-'}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 16 }}>
+              <h4 style={{ marginBottom: 8 }}>分析目标</h4>
+              <div style={{ padding: 12, border: '1px solid #f0f0f0', borderRadius: 4, whiteSpace: 'pre-wrap' }}>
+                {detailChart.goal || '-'}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 16 }}>
+              <h4 style={{ marginBottom: 8 }}>分析结论</h4>
+              <div style={{ padding: 12, border: '1px solid #f0f0f0', borderRadius: 4, whiteSpace: 'pre-wrap' }}>
+                {detailChart.genResult || '-'}
+              </div>
+            </div>
+
+            {detailChart.genChart && (
+              <div style={{ marginBottom: 16 }}>
+                <h4 style={{ marginBottom: 8 }}>图表预览</h4>
+                <div style={{ padding: 12, border: '1px solid #f0f0f0', borderRadius: 4 }}>
+                  {renderChartPreview(detailChart.genChart, detailChart.status || '')}
+                </div>
+              </div>
+            )}
+
+            <div style={{ marginBottom: 16 }}>
+              <h4 style={{ marginBottom: 8 }}>时间信息</h4>
+              <div style={{ display: 'flex', gap: 32 }}>
+                <div>
+                  <span style={{ color: '#666' }}>创建时间：</span>
+                  <span>{detailChart.createTime || '-'}</span>
+                </div>
+                <div>
+                  <span style={{ color: '#666' }}>更新时间：</span>
+                  <span>{detailChart.updateTime || '-'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* 修改图表弹窗 */}
+      <Modal
+        title={`${detailChart?.name || ''} - 修改图表`}
+        visible={editModalVisible}
+        onCancel={() => setEditModalVisible(false)}
+        width={700}
+        footer={[
+          <Button key="back" onClick={() => setEditModalVisible(false)}>取消</Button>,
+          <Button key="submit" type="primary" onClick={handleSubmitEditChart}>确定</Button>
+        ]}
+      >
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ display: 'block', marginBottom: 8 }}>图表名称</label>
+          <Input
+            value={editFormData.name}
+            onChange={(e) => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
+            placeholder="请输入图表名称"
+          />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ display: 'block', marginBottom: 8 }}>分析目标</label>
+          <Input.TextArea
+            value={editFormData.goal}
+            onChange={(e) => setEditFormData(prev => ({ ...prev, goal: e.target.value }))}
+            placeholder="请输入分析目标"
+            rows={3}
+          />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ display: 'block', marginBottom: 8 }}>分析结论</label>
+          <Input.TextArea
+            value={editFormData.genResult}
+            onChange={(e) => setEditFormData(prev => ({ ...prev, genResult: e.target.value }))}
+            placeholder="请输入分析结论"
+            rows={3}
+          />
+        </div>
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ display: 'block', marginBottom: 8 }}>ECharts 配置（JSON）</label>
+          <Input.TextArea
+            value={editFormData.genChart}
+            onChange={(e) => setEditFormData(prev => ({ ...prev, genChart: e.target.value }))}
+            placeholder='请输入 ECharts 配置，例如：{"title":{"text":"图表标题"},"xAxis":{},"yAxis":{},"series":[]}'
+            rows={10}
+            style={{ fontFamily: 'monospace', fontSize: '12px' }}
+          />
+        </div>
+        <div>
+          <label style={{ display: 'block', marginBottom: 8 }}>状态</label>
+          <Select
+            value={editFormData.status}
+            onChange={(value) => setEditFormData(prev => ({ ...prev, status: value }))}
+            placeholder="请选择状态"
+          >
+            <Select.Option value="pending">待生成</Select.Option>
+            <Select.Option value="running">生成中</Select.Option>
+            <Select.Option value="completed">成功</Select.Option>
+            <Select.Option value="failed">失败</Select.Option>
+          </Select>
         </div>
       </Modal>
     </div>

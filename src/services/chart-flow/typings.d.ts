@@ -103,7 +103,7 @@ declare namespace API {
     genChart?: string;
     genResult?: string;
     goal?: string;
-    id?: number;
+    id?: string | number;
     isDelete?: number;
     name?: string;
     status?: string;
