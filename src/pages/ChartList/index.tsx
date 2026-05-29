@@ -93,7 +93,7 @@ const ChartListPage: React.FC = () => {
         color = 'warning';
         text = '待生成';
         break;
-      case 'running':
+      case '#1677ff':
         color = 'info';
         text = '生成中';
         break;

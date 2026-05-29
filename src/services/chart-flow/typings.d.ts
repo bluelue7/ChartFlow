@@ -145,14 +145,14 @@ declare namespace API {
     genChart?: string;
     genResult?: string;
     goal?: string;
-    id?: number;
+    id?: string;
     isDelete?: number;
     name?: string;
     updateTime?: string;
   };
 
   type DeleteRequest = {
-    id?: number;
+    id?: string;
   };
 
   type genChartByAiAsyncMqUsingPOSTParams = {
@@ -541,7 +541,7 @@ declare namespace API {
   };
 
   type FeedbackAddRequest = {
-    chartId?: number;
+    chartId?: string;
     comment?: string;
     rating?: number;
   };
@@ -553,7 +553,7 @@ declare namespace API {
   };
 
   type FeedbackQueryRequest = {
-    chartId?: number;
+    chartId?: string;
     createTimeEnd?: string;
     createTimeStart?: string;
     current?: number;

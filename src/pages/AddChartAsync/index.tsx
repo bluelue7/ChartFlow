@@ -1,4 +1,4 @@
-import { genChartByAiAsyncUsingPost } from '@/services/chart-flow/chartController';
+import { genChartByAiAsyncMqUsingPost } from '@/services/chart-flow/chartController';
 import { uploadDatasetUsingPost } from '@/services/chart-flow/datasetController';
 import { getMyPromptListUsingGet } from '@/services/chart-flow/promptController';
 import { UploadOutlined } from '@ant-design/icons';
@@ -58,8 +58,8 @@ const AddChartAsync: React.FC = () => {
         return;
       }
       
-      const res = await genChartByAiAsyncUsingPost(params, {}, values.file.file.originFileObj);
-      // const res = await genChartByAiAsyncMqUsingPost(params, {}, values.file.file.originFileObj);
+      //const res = await genChartByAiAsyncUsingPost(params, {}, values.file.file.originFileObj);
+      const res = await genChartByAiAsyncMqUsingPost(params, {}, values.file.file.originFileObj);
       if (!res?.data) {
         message.error('分析失败');
       } else {
@@ -97,11 +97,11 @@ const AddChartAsync: React.FC = () => {
           <Form.Item name="chartType" label="图表类型">
             <Select
               options={[
-                { value: '折线图', label: '折线图' },
-                { value: '柱状图', label: '柱状图' },
-                { value: '堆叠图', label: '堆叠图' },
-                { value: '饼图', label: '饼图' },
-                { value: '雷达图', label: '雷达图' },
+                { value: 'line', label: '折线图' },
+                { value: 'bar', label: '柱状图' },
+                { value: 'pie', label: '饼图' },
+                { value: 'scatter', label: '散点图' }, 
+                { value: 'radar', label: '雷达图' },
               ]}
             />
           </Form.Item>
