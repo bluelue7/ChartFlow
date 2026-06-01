@@ -15,16 +15,16 @@ export default [
   { path: '/dataset', name: '数据集', icon: 'database', component: './Dataset' },
   { path: '/feedback_list', name: '反馈列表', icon: 'alertOutlined', component: './FeedbackList' },
   { path: '/prompt_list', name: '提示词', icon: 'messageOutlined', component: './PromptList' },
-  {
-    path: '/admin',
-    name: '管理页',
-    icon: 'crown',
-    access: 'canAdmin',
-    routes: [
-      { path: '/admin', redirect: '/admin/sub-page' },
-      { path: '/admin/sub-page', name: '二级管理页', component: './Admin' },
-    ],
-  },
+  // {
+  //   path: '/admin',
+  //   name: '管理页',
+  //   icon: 'crown',
+  //   access: 'canAdmin',
+  //   routes: [
+  //     { path: '/admin', redirect: '/admin/sub-page' },
+  //     { path: '/admin/sub-page', name: '二级管理页', component: './Admin' },
+  //   ],
+  // },
   // { name: '查询表格', icon: 'table', path: '/list', component: './table-list' },
   { path: '/', redirect: '/welcome' },
   { path: '*', layout: false, component: './404' },

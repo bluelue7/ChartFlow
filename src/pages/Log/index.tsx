@@ -92,6 +92,10 @@ const LogPage: React.FC = () => {
         color = 'error';
         text = '失败';
         break;
+      case 'partial':
+        color = 'error';
+        text = '部分成功';
+        break;
       case 'running':
         color = 'info';
         text = '运行中';
@@ -131,6 +135,7 @@ const LogPage: React.FC = () => {
     taskLogList?.forEach(log => {
       const status = log.status === 'success' || log.status === 'succeed' ? '成功' : 
                      log.status === 'failed' ? '失败' : 
+                     log.status === 'partial' ? '部分成功' : 
                      log.status === 'running' ? '运行中' : '待执行';
       statusCount[status] = (statusCount[status] || 0) + 1;
     });
@@ -244,6 +249,7 @@ const LogPage: React.FC = () => {
                 <Select.Option value="success">成功</Select.Option>
                 <Select.Option value="failed">失败</Select.Option>
                 <Select.Option value="running">运行中</Select.Option>
+                <Select.Option value="partial">部分成功</Select.Option>
                 <Select.Option value="pending">待执行</Select.Option>
               </Select>
             </div>
